@@ -50,6 +50,11 @@ def bangla_voice_to_chinese_voice():
         return jsonify({"error": "No selected file"}), 400
 
     if file:
+        upload_folder = './uploads'
+        # Create the folder if it doesn't exist
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+            print("done")
         file_path = os.path.join('./uploads', file.filename)
         file.save(file_path)
 
