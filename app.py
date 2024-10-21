@@ -96,4 +96,4 @@ def chinese_voice_to_bangla():
 
 if __name__ == '__main__':
     os.makedirs('./uploads', exist_ok=True)  # Create uploads directory if it doesn't exist
-    app.run(host='192.168.1.5', port=5000, debug=True)
+    app.run(debug=True)
