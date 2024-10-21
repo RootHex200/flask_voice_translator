@@ -1,24 +1,17 @@
 from flask import Flask, request, Response, jsonify
 import speech_recognition as sr
-from pydub import AudioSegment
 import os
 from googletrans import Translator
 from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
 translator = Translator()  # Initialize the translator
 
-# Function to convert any audio file format to WAV
-def convert_to_wav(file_path):
-    audio = AudioSegment.from_file(file_path)
-    wav_file_path = file_path.rsplit('.', 1)[0] + ".wav"
-    audio.export(wav_file_path, format="wav")
-    return wav_file_path
-
 # Function to recognize Bangla speech from an audio file
 def recognize_speech(file_path, language_code='bn-BD'):
     wav_file = file_path # Convert file to WAV if necessary
-    print("wav file here :"+wav_file)
+    print("wav file here :" + wav_file)
     r = sr.Recognizer()  # Initialize recognizer
 
     # Load the audio file
@@ -66,6 +59,9 @@ def bangla_voice_to_chinese_voice():
         # Translate recognized Bangla text to Chinese
         chinese_text = translate_bangla_to_chinese(recognized_text)
 
+        # Delete the file after processing
+        os.remove(file_path)
+
         # Return the Chinese translation
         response = Response(chinese_text, content_type='application/json')
         return response, 200
@@ -90,6 +86,9 @@ def chinese_voice_to_bangla():
         
         # Translate recognized Chinese text to Bangla
         bangla_text = translate_chinese_to_bangla(recognized_text)
+
+        # Delete the file after processing
+        os.remove(file_path)
 
         # Return the Bangla translation
         response = Response(bangla_text, content_type='application/json')
