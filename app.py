@@ -4,22 +4,24 @@ import os
 from googletrans import Translator
 from flask_cors import CORS
 from PIL import Image
-import pytesseract
-import pytesseract
-import cv2 
+import easyocr
 app = Flask(__name__)
 CORS(app)
 translator = Translator()  # Initialize the translator
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-def extract_text_from_image(image_path):
-    image = Image.open(image_path)
-    text = pytesseract.image_to_string(image)
-    return text
-def extract_text_from_image(image_path):
-    img = cv2.imread(image_path) 
-    text = pytesseract.image_to_string(img)
-    return text
+
+
+# Initialize the reader (English and Spanish languages as an example)
+reader = easyocr.Reader(['bn','en'],gpu=False)
+
+def extrac_text_from_image(imaegPath):
+    # Perform OCR
+    results = reader.readtext(imaegPath)
+    finalresult=""
+    # Display results
+    for (bbox, text, prob) in results:
+        finalresult+=text
+    return finalresult
 # Function to recognize Bangla speech from an audio file
 def recognize_speech(file_path, language_code='bn-BD'):
     wav_file = file_path # Convert file to WAV if necessary
@@ -72,14 +74,14 @@ def imageToText():
         file.save(file_path)
         
 
-        imgtxt=extract_text_from_image(file_path)
+        imgtxt=extrac_text_from_image(file_path)
         os.remove(file_path)
         data={
                     "status":200,
                     "data":imgtxt
         }
         return Response(
-                    json.dumps(data), 
+                   json.dumps(data, ensure_ascii=False), 
                     status=200, 
                     mimetype='application/json'
                 )
